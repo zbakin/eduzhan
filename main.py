@@ -4,6 +4,7 @@ from typing import List
 from schemas import StudentCreate, StudentResponse, CourseCreate, CourseResponse
 from models import Student as DBStudent, Course as DBCourse
 from database import SessionLocal, engine
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -51,3 +52,5 @@ def create_course(course: CourseCreate, db: Session = Depends(get_db)):
 def read_courses(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     courses = db.query(DBCourse).offset(skip).limit(limit).all()
     return courses
+
+app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

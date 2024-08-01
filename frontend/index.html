@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 5px;
+            padding: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>School Management System</h1>
+
+    <h2>Add Student</h2>
+    <form id="student-form">
+        <input type="text" id="student-name" placeholder="Name" required>
+        <input type="number" id="student-age" placeholder="Age" required>
+        <button type="submit">Add Student</button>
+    </form>
+
+    <h2>Add Course</h2>
+    <form id="course-form">
+        <input type="text" id="course-name" placeholder="Course Name" required>
+        <input type="text" id="course-description" placeholder="Description" required>
+        <input type="number" id="course-teacher-id" placeholder="Teacher ID" required>
+        <button type="submit">Add Course</button>
+    </form>
+
+    <h2>Students</h2>
+    <table id="students-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Students will be inserted here -->
+        </tbody>
+    </table>
+
+    <h2>Courses</h2>
+    <table id="courses-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Teacher ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Courses will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        const apiUrl = 'http://127.0.0.1:8000';
+
+        async function fetchStudents() {
+            const response = await fetch(`${apiUrl}/students/`);
+            const students = await response.json();
+            const tableBody = document.querySelector('#students-table tbody');
+            tableBody.innerHTML = students.map(student => `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.age}</td>
+                    <td>${student.is_active}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function fetchCourses() {
+            const response = await fetch(`${apiUrl}/courses/`);
+            const courses = await response.json();
+            const tableBody = document.querySelector('#courses-table tbody');
+            tableBody.innerHTML = courses.map(course => `
+                <tr>
+                    <td>${course.id}</td>
+                    <td>${course.name}</td>
+                    <td>${course.description}</td>
+                    <td>${course.teacher_id}</td>
+                </tr>
+            `).join('');
+        }
+
+        document.querySelector('#student-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.querySelector('#student-name').value;
+            const age = document.querySelector('#student-age').value;
+            await fetch(`${apiUrl}/students/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, age }),
+            });
+            document.querySelector('#student-name').value = '';
+            document.querySelector('#student-age').value = '';
+            fetchStudents();
+        });
+
+        document.querySelector('#course-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.querySelector('#course-name').value;
+            const description = document.querySelector('#course-description').value;
+            const teacher_id = document.querySelector('#course-teacher-id').value;
+            await fetch(`${apiUrl}/courses/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description, teacher_id }),
+            });
+            document.querySelector('#course-name').value = '';
+            document.querySelector('#course-description').value = '';
+            document.querySelector('#course-teacher-id').value = '';
+            fetchCourses();
+        });
+
+        fetchStudents();
+        fetchCourses();
+    </script>
+</body>
+</html>
