@@ -7,17 +7,23 @@ class StudentBase(BaseModel):
 class StudentCreate(StudentBase):
     pass
 
-class Student(StudentBase):
+class StudentResponse(StudentBase):
     id: int
     is_active: bool
 
     class Config:
         orm_mode = True
 
-class CourseCreate(BaseModel):
+class CourseBase(BaseModel):
     name: str
     description: str
     teacher_id: int
 
-class CourseResponse(CourseCreate):
+class CourseCreate(CourseBase):
+    pass
+
+class CourseResponse(CourseBase):
     id: int
+
+    class Config:
+        orm_mode = True

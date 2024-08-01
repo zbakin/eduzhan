@@ -1,22 +1,6 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
-
-Base = declarative_base()
-
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    is_student = Column(Integer, default=0)
-    is_teacher = Column(Integer, default=0)
-
-class Course(Base):
-    __tablename__ = "courses"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String, index=True)
-    teacher_id = Column(Integer, ForeignKey("users.id"))
-    teacher = relationship("User")
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
+from database import Base
 
 class Student(Base):
     __tablename__ = "students"
@@ -24,3 +8,10 @@ class Student(Base):
     name = Column(String, index=True)
     age = Column(Integer)
     is_active = Column(Boolean, default=True)
+
+class Course(Base):
+    __tablename__ = "courses"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text)
+    teacher_id = Column(Integer)
