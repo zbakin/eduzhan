@@ -1,4 +1,31 @@
 from pydantic import BaseModel
+from typing import Optional, List
+import enum
+
+class UserRole(enum.Enum):
+    student = "student"
+    teacher = "teacher"
+    admin = "admin"
+
+class UserBase(BaseModel):
+    username: str
+    role: UserRole
+
+class UserCreate(UserBase):
+    password: str
+
+class UserResponse(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
 
 class StudentBase(BaseModel):
     name: str
