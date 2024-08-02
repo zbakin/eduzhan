@@ -36,6 +36,15 @@ def read_students(skip: int = 0, limit: int = 10, db: Session = Depends(get_db))
     students = db.query(DBStudent).offset(skip).limit(limit).all()
     return students
 
+@app.delete("/students/{student_id}")
+def delete_student(student_id: int, db: Session = Depends(get_db)):
+    db_student = db.query(DBStudent).filter(DBStudent.id == student_id).first()
+    if db_student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
+    db.delete(db_student)
+    db.commit()
+    return {"detail": "Student deleted"}
+
 @app.post("/courses/", response_model=CourseResponse)
 def create_course(course: CourseCreate, db: Session = Depends(get_db)):
     db_course = DBCourse(name=course.name, description=course.description, teacher_id=course.teacher_id)
@@ -52,5 +61,14 @@ def create_course(course: CourseCreate, db: Session = Depends(get_db)):
 def read_courses(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     courses = db.query(DBCourse).offset(skip).limit(limit).all()
     return courses
+
+@app.delete("/courses/{course_id}")
+def delete_course(course_id: int, db: Session = Depends(get_db)):
+    db_course = db.query(DBCourse).filter(DBCourse.id == course_id).first()
+    if db_course is None:
+        raise HTTPException(status_code=404, detail="Course not found")
+    db.delete(db_course)
+    db.commit()
+    return {"detail": "Course deleted"}
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
